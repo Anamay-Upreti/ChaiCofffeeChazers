@@ -8,7 +8,7 @@ export const registerUser = async (req, res) => {
     const userExists = await User.findOne({ email });
 
     if (userExists) return;
-    res.status(400).json({ message: "User already exists" });
+    res.status(200).json({ message: "User Registered!" });
 
     const hashed = await bcrypt.hash(password, 12);
     const user = await User.create({
@@ -71,4 +71,11 @@ export const logout = async (req,res) =>{
     res.json({
         message: "Logged out"
     })
+}
+
+export default {
+    registerUser,
+    loginUser,
+    getUser,
+    logout
 }
