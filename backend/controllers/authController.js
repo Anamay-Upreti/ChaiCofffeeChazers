@@ -30,52 +30,72 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// for login 
+// for login
 
+export const loginUser = async (req, res) => {
+  const { email, password } = req.body;
 
-export const loginUser = async (req, res) =>{
-    const {email, password} = req.body;
-
-    try{
-    const user = await User.findOne({email});    
-    if(!user) return res.status(400).json({
-        message: "User does not exist"
-    })
+  try {
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(400).json({
+        message: "User does not exist",
+      });
     const isMatch = await bcrypt.compare(password, user.password);
-    if(!isMatch) return res.status(400).json({
-        message: "Invalid credentials"
-    })
+    if (!isMatch)
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
 
     res.json({
-        token: generateToken(user._id),
-        user: {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-        },
+      token: generateToken(user._id),
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+      },
     });
-} catch(err){
-    res.status(500).json({message: err.message});
-}
-}
-
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 //for auth user
-export const getUser = async (req, res) =>{
-    res.json(req.user);
-}
+export const getUser = async (req, res) => {
+  res.json(req.user);
+};
 
-//logout 
+//logout
 
-export const logout = async (req,res) =>{
+export const logout = async (req, res) => {
+  res.json({
+    message: "Logged out",
+  });
+};
+
+//delete user
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    const deleteUser = await User.findByIdAndDelete(id);
+    if (!deleteUser)
+      return res.status(400).json({
+        message: "User does not exist",
+      });
     res.json({
-        message: "Logged out"
-    })
-}
+      message: "User deleted succefully",
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 export default {
-    registerUser,
-    loginUser,
-    getUser,
-    logout
-}
+  registerUser,
+  loginUser,
+  getUser,
+  logout,
+  deleteUser
+};
