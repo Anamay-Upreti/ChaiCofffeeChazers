@@ -1,21 +1,29 @@
 import Product from "../models/Product.js";
 
 export const createProduct = async (req, res) => {
-   const {name, price, description} = req.body;
-   const image = req.file.path;
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
 
-   if(!name || !price || !description || !image) {
-      return res.status(400).json({message: "All fields are required"});
-   }
-   try{
-    const product = await Product.create({name, price, description,
-        image });
+  const { name, price, description } = req.body;
+  const image = req.file ? req.file.path : null;
+
+  if (!name || !price || !description || !image) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const product = await Product.create({
+      name,
+      price: Number(price),
+      description,
+      image,
+    });
+
     res.status(201).json(product);
-   } catch (err) {
-    res.status(500).json({message: err.message});
-   }
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
-
 export const getAllProducts = async (req, res) => {
     try {
         const products = await Product.find();
